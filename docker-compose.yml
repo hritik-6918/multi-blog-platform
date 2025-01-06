@@ -1,0 +1,40 @@
+version: "3.8"
+services:
+    db:
+        image: postgres:13
+        restart: always
+        environment:
+            POSTGRES_USER: user
+            POSTGRES_PASSWORD: password
+        ports:
+            - "5432:5432"
+        volumes:
+            - db_data:/var/lib/postgresql/data
+    user-service:
+        build: ./user-service
+        ports:
+            - "5000:5000"
+        environment:
+            - DATABASE_URL=postgresql://user:password@db:5432/users_db
+            - JWT_SECRET=74DC2F9C45CC5B5BF14A945EF6C65
+        depends_on:
+            - db
+    blog-service:
+        build: ./blog-service
+        ports:
+          - "5001:5001"
+        environment:
+          - DATABASE_URL=postgresql://user:password@db:5432/blog_db
+        depends_on:
+            - db
+    comment-service:
+         build: ./comment-service
+         ports:
+             - "5002:5002"
+         environment:
+             - DATABASE_URL=postgresql://user:password@db:5432/comment_db
+         depends_on:
+             - db
+
+volumes:
+    db_data:
