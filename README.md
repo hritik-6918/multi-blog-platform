@@ -64,11 +64,7 @@ The platform allows users to register, login, and manage profiles. It also enabl
     *   Edit the `.env` file and provide your PostgreSQL credentials, and JWT secret:
 
         ```
-        POSTGRES_USER=blog_user
-        POSTGRES_PASSWORD=blog_password
-        POSTGRES_DB=blog_db
-        POSTGRES_HOST=db
-        POSTGRES_PORT=5432
+        DATABASE_URL=" "
         JWT_SECRET=your_secret_key
         ```
 
@@ -84,3 +80,256 @@ The platform allows users to register, login, and manage profiles. It also enabl
     *   User service: `http://localhost:5000`
     *   Blog service: `http://localhost:5001`
     *   Comment service: `http://localhost:5002`
+
+## API Documentation
+
+### User Service
+
+*   **`POST /register`**
+    *   **Request Body:**
+
+        ```json
+        {
+          "username": "your_username",
+          "password": "your_password"
+        }
+        ```
+    *   **Response (201 Created):**
+        ```json
+        {
+            "message": "User registered successfully"
+        }
+        ```
+    *  **Response (400 Bad Request):**
+        ```json
+        {
+            "message": "Username and password are required"
+        }
+        ```
+      or
+       ```json
+        {
+            "message": "Username already exists"
+        }
+        ```
+
+*   **`POST /login`**
+    *   **Request Body:**
+
+        ```json
+        {
+          "username": "your_username",
+          "password": "your_password"
+        }
+        ```
+    *   **Response (200 OK):**
+        ```json
+        {
+            "token": "your_jwt_token"
+        }
+        ```
+    * **Response (401 Unauthorized):**
+       ```json
+        {
+            "message": "Invalid username or password"
+        }
+       ```
+
+*   **`GET /users/<id>`**
+    *   **Response (200 OK):**
+        ```json
+        {
+            "id": 1,
+            "username": "your_username"
+         }
+        ```
+    *   **Response (404 Not Found):**
+         ```json
+        {
+          "message": "User not found"
+        }
+         ```
+
+*   **`PUT /users/<id>`**
+    *   **Request Body:**
+        ```json
+        {
+          "username": "new_username",
+          "password": "new_password"
+        }
+        ```
+        (username and password fields are optional, use only the ones you need)
+    *   **Response (200 OK):**
+        ```json
+        {
+           "message": "User updated successfully"
+        }
+        ```
+   * **Response (404 Not Found):**
+         ```json
+        {
+          "message": "User not found"
+        }
+         ```
+*  **`DELETE /users/<id>`**
+     *  **Response (200 OK):**
+        ```json
+        {
+          "message": "User deleted successfully"
+        }
+         ```
+     *   **Response (404 Not Found):**
+         ```json
+        {
+          "message": "User not found"
+        }
+         ```
+
+### Blog Service
+
+*   **`POST /blogs`**
+    *   **Request Body:**
+
+        ```json
+        {
+          "title": "your_blog_title",
+          "content": "your_blog_content"
+        }
+        ```
+    *   **Response (201 Created):**
+        ```json
+        {
+            "message": "Blog post created successfully",
+            "id": 1
+        }
+        ```
+     *   **Response (400 Bad Request):**
+        ```json
+        {
+            "message": "Title and content are required"
+        }
+       ```
+
+*   **`GET /blogs`**
+    *   **Query Parameters:** `page` (optional) for pagination
+    *   **Response (200 OK):**
+
+         ```json
+         {
+          "blogs":[
+                {
+                    "id": 1,
+                    "title": "blog_title",
+                    "content": "blog_content",
+                    "created_at": "date_time"
+                 }
+                ],
+             "pagination": {
+                  "page": 1,
+                  "per_page": 10,
+                  "total": 100,
+                  "pages": 10,
+                  "has_prev": false,
+                  "has_next": true
+                }
+           }
+         ```
+
+*   **`GET /blogs/<id>`**
+    *   **Response (200 OK):**
+
+        ```json
+        {
+            "id": 1,
+            "title": "blog_title",
+            "content": "blog_content",
+            "created_at": "date_time"
+        }
+        ```
+    *   **Response (404 Not Found):**
+          ```json
+        {
+           "message": "Blog post not found"
+        }
+         ```
+*  **`PUT /blogs/<id>`**
+    *   **Request Body:**
+        ```json
+        {
+          "title": "new_blog_title",
+          "content": "new_blog_content"
+        }
+        ```
+        (title and content are optional, use only the ones you need)
+    *  **Response (200 OK):**
+       ```json
+       {
+          "message": "Blog post updated successfully"
+        }
+        ```
+   *   **Response (404 Not Found):**
+        ```json
+        {
+            "message": "Blog post not found"
+        }
+       ```
+*  **`DELETE /blogs/<id>`**
+     *  **Response (200 OK):**
+        ```json
+        {
+           "message": "Blog post deleted successfully"
+         }
+         ```
+    *   **Response (404 Not Found):**
+        ```json
+        {
+            "message": "Blog post not found"
+        }
+         ```
+
+### Comment Service
+
+*   **`POST /comments`**
+    *   **Request Body:**
+
+        ```json
+        {
+          "post_id": 1,
+          "content": "your_comment_content"
+        }
+        ```
+    *   **Response (201 Created):**
+
+        ```json
+        {
+            "message": "Comment added successfully"
+        }
+        ```
+     *   **Response (400 Bad Request):**
+        ```json
+        {
+            "message": "Post ID and content are required"
+        }
+       ```
+
+*   **`GET /comments?post_id=<id>`**
+    *   **Response (200 OK):**
+
+        ```json
+        {
+          "comments":[
+                {
+                    "id": 1,
+                    "post_id": 1,
+                    "content": "comment_content",
+                    "created_at": "date_time"
+                  }
+              ]
+          }
+        ```
+      *   **Response (400 Bad Request):**
+        ```json
+        {
+            "message": "Post ID is required"
+        }
+        ```
